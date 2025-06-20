@@ -123,7 +123,7 @@ export const applicationStages = [
 ] as const
 export type ApplicationStage = (typeof applicationStages)[number]
 export const applicationStageEnum = pgEnum(
-  'job_listing_applications_stage',
+  'applications_for_jobs_stage',
   applicationStages
 )
 
