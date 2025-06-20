@@ -11,6 +11,7 @@ import {
   varchar
 } from 'drizzle-orm/pg-core'
 import { createdAt, id, updatedAt } from './schema-helpers'
+import { relations } from 'drizzle-orm'
 
 export const UserTable = pgTable('users', {
   id: varchar().primaryKey(),
@@ -21,6 +22,13 @@ export const UserTable = pgTable('users', {
   updatedAt
 })
 
+export const userRelations = relations(UserTable, ({ one, many }) => ({
+  // We only need to specify the table for the one to one relationships because the key is in the other table i.e. userNotificationSettings or UserResume which quote the userId
+  notificationSettings: one(UserNotificationSettingsTable),
+  resume: one(UserResumeTable),
+  organizationUserSettings: many(OrganizationUserSettingsTable)
+}))
+
 export const OrganizationTable = pgTable('organizations', {
   id: varchar().primaryKey(),
   name: varchar().notNull(),
@@ -28,6 +36,14 @@ export const OrganizationTable = pgTable('organizations', {
   createdAt,
   updatedAt
 })
+
+export const organizationRelations = relations(
+  OrganizationTable,
+  ({ many }) => ({
+    jobListings: many(JobListingTable),
+    organizationUserSettings: many(OrganizationUserSettingsTable)
+  })
+)
 
 export const wageIntervals = ['hourly', 'yearly'] as const
 export type WageInterval = (typeof wageIntervals)[number]
@@ -87,6 +103,17 @@ export const JobListingTable = pgTable(
   table => [index().on(table.stateAbbreviation)]
 )
 
+export const jobListingReferences = relations(
+  JobListingTable,
+  ({ one, many }) => ({
+    organization: one(OrganizationTable, {
+      fields: [JobListingTable.organizationId],
+      references: [OrganizationTable.id]
+    }),
+    applications: many(JobListingApplicationTable)
+  })
+)
+
 export const applicationStages = [
   'denied',
   'applied',
@@ -119,6 +146,20 @@ export const JobListingApplicationTable = pgTable(
   table => [primaryKey({ columns: [table.jobListingId, table.userId] })]
 )
 
+export const jobListingApplicationRelations = relations(
+  JobListingApplicationTable,
+  ({ one }) => ({
+    jobListing: one(JobListingTable, {
+      fields: [JobListingApplicationTable.jobListingId],
+      references: [JobListingTable.id]
+    }),
+    user: one(UserTable, {
+      fields: [JobListingApplicationTable.userId],
+      references: [UserTable.id]
+    })
+  })
+)
+
 export const OrganizationUserSettingsTable = pgTable(
   'organization_user_settings',
   {
@@ -137,6 +178,20 @@ export const OrganizationUserSettingsTable = pgTable(
   table => [primaryKey({ columns: [table.userId, table.organizationId] })]
 )
 
+export const organizationUserSettingsRelations = relations(
+  OrganizationUserSettingsTable,
+  ({ one }) => ({
+    user: one(UserTable, {
+      fields: [OrganizationUserSettingsTable.userId],
+      references: [UserTable.id]
+    }),
+    organization: one(OrganizationTable, {
+      fields: [OrganizationUserSettingsTable.userId],
+      references: [OrganizationTable.id]
+    })
+  })
+)
+
 export const UserNotificationSettingsTable = pgTable(
   'user_notification_settings',
   {
@@ -150,6 +205,16 @@ export const UserNotificationSettingsTable = pgTable(
   }
 )
 
+export const userNotificationSettingsRelations = relations(
+  UserNotificationSettingsTable,
+  ({ one }) => ({
+    user: one(UserTable, {
+      fields: [UserNotificationSettingsTable.userId],
+      references: [UserTable.id]
+    })
+  })
+)
+
 export const UserResumeTable = pgTable('user_resumes', {
   userId: varchar()
     .primaryKey()
@@ -160,3 +225,10 @@ export const UserResumeTable = pgTable('user_resumes', {
   createdAt,
   updatedAt
 })
+
+export const userResumeRelations = relations(UserResumeTable, ({ one }) => ({
+  user: one(UserTable, {
+    fields: [UserResumeTable.userId],
+    references: [UserTable.id]
+  })
+}))
