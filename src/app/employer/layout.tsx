@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { SidebarOrganizationButton } from '@/features/organizations/components/SidebarOrganizationButton'
 
 import { ClipboardListIcon, PlusIcon } from 'lucide-react'
 
@@ -53,7 +54,7 @@ async function LayoutSuspense({ children }: { children: ReactNode }) {
           />
         </>
       }
-      footerButton={'Sidebar Organization Button'}
+      footerButton={<SidebarOrganizationButton />}
     >
       {children}
     </AppSidebar>
