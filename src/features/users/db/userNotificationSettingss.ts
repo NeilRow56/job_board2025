@@ -1,5 +1,6 @@
 import { db } from '@/db'
 import { UserNotificationSettingsTable } from '@/db/schema'
+import { revalidateUserNotificationSettingsCache } from './cache/userNottificationSettings'
 
 export async function insertUserNotificationSettings(
   settings: typeof UserNotificationSettingsTable.$inferInsert
@@ -8,6 +9,8 @@ export async function insertUserNotificationSettings(
     .insert(UserNotificationSettingsTable)
     .values(settings)
     .onConflictDoNothing()
+
+  revalidateUserNotificationSettingsCache(settings.userId)
 }
 
 export async function updateUserNotificationSettings(
@@ -23,4 +26,6 @@ export async function updateUserNotificationSettings(
       target: UserNotificationSettingsTable.userId,
       set: settings
     })
+
+  revalidateUserNotificationSettingsCache(userId)
 }
