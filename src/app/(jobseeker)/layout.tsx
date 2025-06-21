@@ -1,7 +1,7 @@
 import { AppSidebar } from '@/components/sidebar/AppSidebar'
-import { SidebarNavMenuGroup } from '@/components/sidebar/SidebarMenuGroup'
-import { SidebarUserButton } from '@/features/users/components/SidebarUserButton'
+import { SidebarNavMenuGroup } from '@/components/sidebar/SidebarNavMenuGroup'
 
+import { SidebarUserButton } from '@/features/users/components/SidebarUserButton'
 import {
   BrainCircuitIcon,
   ClipboardListIcon,
@@ -23,7 +23,7 @@ export default function JobSeekerLayout({
         <>
           {sidebar}
           <SidebarNavMenuGroup
-            className=''
+            className='mt-auto'
             items={[
               { href: '/', icon: <ClipboardListIcon />, label: 'Job Board' },
               {

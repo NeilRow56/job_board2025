@@ -10,6 +10,7 @@ import {
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { SignedIn, SignedOut } from '@/services/clerk/components/SigninStatus'
 
 export function SidebarNavMenuGroup({
   items,
@@ -39,6 +40,14 @@ export function SidebarNavMenuGroup({
               </SidebarMenuButton>
             </SidebarMenuItem>
           )
+
+          if (item.authStatus === 'signedOut') {
+            return <SignedOut key={item.href}>{html}</SignedOut>
+          }
+
+          if (item.authStatus === 'signedIn') {
+            return <SignedIn key={item.href}>{html}</SignedIn>
+          }
 
           return html
         })}

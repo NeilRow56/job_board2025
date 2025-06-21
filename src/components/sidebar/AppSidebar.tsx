@@ -29,7 +29,7 @@ export function AppSidebar({
             <SidebarTrigger />
             <span className='text-xl text-nowrap'>WDS Jobs</span>
           </SidebarHeader>
-          <SidebarContent>{content}</SidebarContent>
+          <SidebarContent className='bg-blue-50'>{content}</SidebarContent>
           <div className='mb-16'>
             <SidebarFooter>
               <SidebarMenu>
