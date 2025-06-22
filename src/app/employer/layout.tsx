@@ -11,10 +11,12 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { SidebarOrganizationButton } from '@/features/organizations/components/SidebarOrganizationButton'
+import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
 
 import { ClipboardListIcon, PlusIcon } from 'lucide-react'
 
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 import { ReactNode, Suspense } from 'react'
 
@@ -27,6 +29,8 @@ export default function EmployerLayout({ children }: { children: ReactNode }) {
 }
 
 async function LayoutSuspense({ children }: { children: ReactNode }) {
+  const { orgId } = await getCurrentOrganization()
+  if (orgId == null) return redirect('/organizations/select')
   return (
     <AppSidebar
       content={

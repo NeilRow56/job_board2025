@@ -1,5 +1,6 @@
 import { inngest } from '@/services/inngest/client'
 import {
+  clerkCreateOrganization,
   clerkCreateUser,
   clerkDeleteUser,
   clerkUpdateUser
@@ -13,6 +14,7 @@ export const { GET, POST, PUT } = serve({
     /* your functions will be passed here later! */
     clerkCreateUser,
     clerkUpdateUser,
-    clerkDeleteUser
+    clerkDeleteUser,
+    clerkCreateOrganization
   ]
 })

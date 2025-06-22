@@ -1,19 +1,17 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
+
 import './globals.css'
 
 import { ClerkProvider } from '@/services/clerk/components/ClerkProvider'
 import { Toaster } from '@/components/ui/sonner'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
+const openSans = localFont({
+  src: '/fonts/OpenSans-VariableFont_wdth,wght.ttf'
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
-})
+//👇 Configure the object for our second font
+const roboto = localFont({ src: '/fonts/Roboto-VariableFont_wdth,wght.ttf' })
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -28,9 +26,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang='en'>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-        >
+        <body className={`${openSans} ${roboto} font-sans antialiased`}>
           {children}
           <Toaster />
         </body>

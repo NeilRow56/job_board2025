@@ -3,6 +3,7 @@ import { Webhook } from 'svix'
 import { NonRetriableError } from 'inngest'
 import { deleteUser, insertUser, updateUser } from '@/features/users/db/users'
 import { insertUserNotificationSettings } from '@/features/users/db/userNotificationSettingss'
+import { insertOrganization } from '@/features/organizations/db/organizations'
 
 function verifyWebhook({
   raw,
@@ -107,6 +108,37 @@ export const clerkDeleteUser = inngest.createFunction(
         throw new NonRetriableError('No id found')
       }
       await deleteUser(id)
+    })
+  }
+)
+
+export const clerkCreateOrganization = inngest.createFunction(
+  {
+    id: 'clerk/create-db-organization',
+    name: 'Clerk - Create DB Organization'
+  },
+  {
+    event: 'clerk/organization.created'
+  },
+  async ({ event, step }) => {
+    await step.run('verify-webhook', async () => {
+      try {
+        verifyWebhook(event.data)
+      } catch {
+        throw new NonRetriableError('Invalid webhook')
+      }
+    })
+
+    await step.run('create-organization', async () => {
+      const orgData = event.data.data
+
+      await insertOrganization({
+        id: orgData.id,
+        name: orgData.name,
+        imageUrl: orgData.image_url,
+        createdAt: new Date(orgData.created_at),
+        updatedAt: new Date(orgData.updated_at)
+      })
     })
   }
 )
