@@ -7,11 +7,15 @@ import { ClerkProvider } from '@/services/clerk/components/ClerkProvider'
 import { Toaster } from '@/components/ui/sonner'
 
 const openSans = localFont({
-  src: '/fonts/OpenSans-VariableFont_wdth,wght.ttf'
+  src: '/fonts/OpenSans-VariableFont_wdth,wght.ttf',
+  preload: false
 })
 
 //👇 Configure the object for our second font
-const roboto = localFont({ src: '/fonts/Roboto-VariableFont_wdth,wght.ttf' })
+const roboto = localFont({
+  src: '/fonts/Roboto-VariableFont_wdth,wght.ttf',
+  preload: false
+})
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -26,7 +30,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang='en'>
-        <body className={`${openSans} ${roboto} font-sans antialiased`}>
+        <body
+          className={`${openSans.className} ${roboto.className} font-sans antialiased`}
+        >
           {children}
           <Toaster />
         </body>
