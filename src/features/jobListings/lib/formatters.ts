@@ -76,9 +76,9 @@ export function formatJobListingStatus(status: JobListingStatus) {
 }
 
 export function formatWage(wage: number, wageInterval: WageInterval) {
-  const wageFormatter = new Intl.NumberFormat('en-US', {
+  const wageFormatter = new Intl.NumberFormat('en-GB', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'GBP',
     minimumFractionDigits: 0
   })
 
