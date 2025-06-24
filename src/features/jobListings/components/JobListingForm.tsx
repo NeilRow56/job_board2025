@@ -12,7 +12,7 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
-
+import { z } from 'zod/v4'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -23,29 +23,48 @@ import {
 } from '@/components/ui/select'
 import {
   experienceLevels,
+  JobListingTable,
   jobListingTypes,
   locationRequirements,
   wageIntervals
 } from '@/db/schema'
-
-import { Button } from '@/components/ui/button'
-import { jobListingSchema } from '../actions/schema'
 import {
   formatExperienceLevel,
   formatJobType,
   formatLocationRequirement,
   formatWageInterval
 } from '../lib/formatters'
-import { LoadingSwap } from '@/components/LoadingSwap'
-import * as z from 'zod/v4'
 import { StateSelectItems } from './StateSelectItems'
+import { MarkdownEditor } from '@/components/markdown/MarkdownEditor'
+import { Button } from '@/components/ui/button'
+import { LoadingSwap } from '@/components/LoadingSwap'
+
+import { toast } from 'sonner'
+import { createJobListing } from '../actions/job-list-actions'
+import { jobListingSchema } from '../actions/schema'
 
 const NONE_SELECT_VALUE = 'none'
 
-export function JobListingForm() {
+export function JobListingForm({
+  jobListing
+}: {
+  jobListing: Pick<
+    typeof JobListingTable.$inferSelect,
+    | 'title'
+    | 'description'
+    | 'experienceLevel'
+    | 'id'
+    | 'stateAbbreviation'
+    | 'type'
+    | 'wage'
+    | 'wageInterval'
+    | 'city'
+    | 'locationRequirement'
+  >
+}) {
   const form = useForm({
     resolver: zodResolver(jobListingSchema),
-    defaultValues: {
+    defaultValues: jobListing ?? {
       title: '',
       description: '',
       stateAbbreviation: null,
@@ -58,9 +77,14 @@ export function JobListingForm() {
     }
   })
 
-  function onSubmit(data: z.infer<typeof jobListingSchema>) {
-    console.log(data)
+  async function onSubmit(data: z.infer<typeof jobListingSchema>) {
+    const res = await createJobListing(data)
+
+    if (res.error) {
+      toast.error(res.message)
+    }
   }
+
   return (
     <Form {...form}>
       <form
@@ -265,7 +289,7 @@ export function JobListingForm() {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value ?? ''} />
+                <MarkdownEditor {...field} markdown={field.value} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
-
+import '@mdxeditor/editor/style.css'
 import './globals.css'
 
 import { ClerkProvider } from '@/services/clerk/components/ClerkProvider'
@@ -34,7 +34,17 @@ export default function RootLayout({
           className={`${openSans.className} ${roboto.className} font-sans antialiased`}
         >
           {children}
-          <Toaster />
+          <Toaster
+            toastOptions={{
+              unstyled: true,
+              classNames: {
+                error: 'bg-red-400 p-2 rounded-md text-white',
+                success: 'text-green-400',
+                warning: 'text-yellow-400',
+                info: 'bg-blue-400 p-2 rounded-md'
+              }
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>
