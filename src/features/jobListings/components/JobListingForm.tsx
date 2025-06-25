@@ -40,7 +40,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingSwap } from '@/components/LoadingSwap'
 
 import { toast } from 'sonner'
-import { createJobListing } from '../actions/job-list-actions'
+import { createJobListing, updateJobListing } from '../actions/job-list-actions'
 import { jobListingSchema } from '../actions/schema'
 
 const NONE_SELECT_VALUE = 'none'
@@ -78,7 +78,10 @@ export function JobListingForm({
   })
 
   async function onSubmit(data: z.infer<typeof jobListingSchema>) {
-    const res = await createJobListing(data)
+    const action = jobListing
+      ? updateJobListing.bind(null, jobListing.id)
+      : createJobListing
+    const res = await action(data)
 
     if (res.error) {
       toast.error(res.message)
@@ -301,7 +304,7 @@ export function JobListingForm({
           className='w-full'
         >
           <LoadingSwap isLoading={form.formState.isSubmitting}>
-            Create Job Listing
+            {jobListing ? 'Update Job Listing' : 'Create Job Listing'}
           </LoadingSwap>
         </Button>
       </form>

@@ -1,9 +1,4 @@
-import { db } from '@/db'
-import { JobListingTable } from '@/db/schema'
-import { getJobListingIdTag } from '@/features/jobListings/db/cache/jobListings'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
-import { and, eq } from 'drizzle-orm'
-import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Badge } from '@/components/ui/badge'
@@ -14,6 +9,12 @@ import { EditIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarkdownPartial } from '@/components/markdown/MarkdownPartial'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRender'
+
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import { getJobListingIdTag } from '@/features/jobListings/db/cache/jobListings'
+import { db } from '@/db'
+import { and, eq } from 'drizzle-orm'
+import { JobListingTable } from '@/db/schema'
 
 type Props = {
   params: Promise<{ jobListingId: string }>
@@ -36,11 +37,11 @@ async function SuspendedPage({ params }: Props) {
   return (
     <div className='@container mx-auto max-w-6xl space-y-6 p-4'>
       <div className='flex items-center justify-between gap-4 @max-4xl:flex-col @max-4xl:items-start'>
-        <div>
-          <h1 className='text-2xl font-bold tracking-tight'>
+        <div className='bg-muted-foreground/10 rounded-md'>
+          <h1 className='px-1 text-2xl font-bold tracking-tight'>
             {jobListing.title}
           </h1>
-          <div className='mt-2 flex flex-wrap gap-2'>
+          <div className='mt-2 flex flex-wrap gap-2 px-1 pb-4'>
             <Badge>{formatJobListingStatus(jobListing.status)}</Badge>
             <JobListingBadges jobListing={jobListing} />
           </div>
