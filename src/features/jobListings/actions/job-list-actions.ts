@@ -10,13 +10,14 @@ import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { db } from '@/db'
 import { and, eq } from 'drizzle-orm'
 import { JobListingTable } from '@/db/schema'
+import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions'
 
 export async function createJobListing(
   unsafeData: z.infer<typeof jobListingSchema>
 ) {
   const { orgId } = await getCurrentOrganization()
 
-  if (orgId == null)
+  if (orgId == null || !(await hasOrgUserPermission('org:job_listings:create')))
     return {
       error: true,
       message: "You don't have permission to create a job listing"
@@ -45,7 +46,10 @@ export async function updateJobListing(
 ) {
   const { orgId } = await getCurrentOrganization()
 
-  if (orgId == null) {
+  if (
+    orgId == null ||
+    !(await hasOrgUserPermission('org:job_listings:update'))
+  ) {
     return {
       error: true,
       message: "You don't have permission to update this job listing"
