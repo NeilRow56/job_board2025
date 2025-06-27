@@ -12,7 +12,10 @@ import { and, eq } from 'drizzle-orm'
 import { JobListingTable } from '@/db/schema'
 import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions'
 import { getNextJobListingStatus } from '../lib/utils'
-import { hasReachedMaxFeaturedJobListings } from '../lib/planfeatureHelpers'
+import {
+  hasReachedMaxFeaturedJobListings,
+  hasReachedMaxPublishedJobListings
+} from '../lib/planfeatureHelpers'
 
 export async function createJobListing(
   unsafeData: z.infer<typeof jobListingSchema>
@@ -105,7 +108,7 @@ export async function toggleJobListingStatus(id: string) {
   const newStatus = getNextJobListingStatus(jobListing.status)
   if (
     !(await hasOrgUserPermission('org:job_listings:change_status')) ||
-    (newStatus === 'published' && (await hasReachedMaxFeaturedJobListings()))
+    (newStatus === 'published' && (await hasReachedMaxPublishedJobListings()))
   ) {
     return error
   }
