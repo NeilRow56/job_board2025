@@ -4,7 +4,11 @@ import * as z from 'zod/v4'
 import { jobListingSchema } from './schema'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
 import { redirect } from 'next/navigation'
-import { insertJobListing, updateJobListingDB } from '../db/jobListing'
+import {
+  deleteJobListingDB,
+  insertJobListing,
+  updateJobListingDB
+} from '../db/jobListing'
 import { getJobListingIdTag } from '../db/cache/jobListings'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { db } from '@/db'
@@ -150,4 +154,24 @@ export async function toggleJobListingFeatured(id: string) {
   })
 
   return { error: false }
+}
+
+export async function deleteJobListing(id: string) {
+  const error = {
+    error: true,
+    message: "You don't have permission to delete this job listing"
+  }
+  const { orgId } = await getCurrentOrganization()
+  if (orgId == null) return error
+
+  const jobListing = await getJobListing(id, orgId)
+  if (jobListing == null) return error
+
+  if (!(await hasOrgUserPermission('org:job_listings:delete'))) {
+    return error
+  }
+
+  await deleteJobListingDB(id)
+
+  redirect('/employer')
 }

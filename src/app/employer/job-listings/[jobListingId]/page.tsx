@@ -10,7 +10,8 @@ import {
   EyeIcon,
   EyeOffIcon,
   StarIcon,
-  StarOffIcon
+  StarOffIcon,
+  Trash2Icon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarkdownPartial } from '@/components/markdown/MarkdownPartial'
@@ -33,6 +34,7 @@ import {
 } from '@/components/ui/popover'
 import { ActionButton } from '@/components/ActionButton'
 import {
+  deleteJobListing,
   toggleJobListingFeatured,
   toggleJobListingStatus
 } from '@/features/jobListings/actions/job-list-actions'
@@ -87,6 +89,18 @@ async function SuspendedPage({ params }: Props) {
               id={jobListing.id}
             />
           )}
+          <AsyncIf
+            condition={() => hasOrgUserPermission('org:job_listings:delete')}
+          >
+            <ActionButton
+              variant='destructive'
+              action={deleteJobListing.bind(null, jobListing.id)}
+              requireAreYouSure
+            >
+              <Trash2Icon className='size-4' />
+              Delete
+            </ActionButton>
+          </AsyncIf>
         </div>
       </div>
       <MarkdownPartial
