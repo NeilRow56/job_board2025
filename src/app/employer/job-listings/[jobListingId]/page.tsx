@@ -5,7 +5,13 @@ import { Badge } from '@/components/ui/badge'
 import { formatJobListingStatus } from '@/features/jobListings/lib/formatters'
 import { JobListingBadges } from '@/features/jobListings/components/JobListingBadges'
 import Link from 'next/link'
-import { EditIcon, EyeIcon, EyeOffIcon } from 'lucide-react'
+import {
+  EditIcon,
+  EyeIcon,
+  EyeOffIcon,
+  StarIcon,
+  StarOffIcon
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarkdownPartial } from '@/components/markdown/MarkdownPartial'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRender'
@@ -26,7 +32,10 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { ActionButton } from '@/components/ActionButton'
-import { toggleJobListingStatus } from '@/features/jobListings/actions/job-list-actions'
+import {
+  toggleJobListingFeatured,
+  toggleJobListingStatus
+} from '@/features/jobListings/actions/job-list-actions'
 
 // import { ActionButton } from '@/components/ActionButton'
 
@@ -72,6 +81,12 @@ async function SuspendedPage({ params }: Props) {
             </Button>
           </AsyncIf>
           <StatusUpdateButton status={jobListing.status} id={jobListing.id} />
+          {jobListing.status === 'published' && (
+            <FeaturedToggleButton
+              isFeatured={jobListing.isFeatured}
+              id={jobListing.id}
+            />
+          )}
         </div>
       </div>
       <MarkdownPartial
@@ -133,6 +148,48 @@ function StatusUpdateButton({
   )
 }
 
+function FeaturedToggleButton({
+  isFeatured,
+  id
+}: {
+  isFeatured: boolean
+  id: string
+}) {
+  const button = (
+    <ActionButton
+      action={toggleJobListingFeatured.bind(null, id)}
+      variant='outline'
+    >
+      {featuredToggleButtonText(isFeatured)}
+    </ActionButton>
+  )
+
+  return (
+    <AsyncIf
+      condition={() => hasOrgUserPermission('org:job_listings:change_status')}
+    >
+      {isFeatured ? (
+        button
+      ) : (
+        <AsyncIf
+          condition={async () => {
+            const isMaxed = await hasReachedMaxFeaturedJobListings()
+            return !isMaxed
+          }}
+          otherwise={
+            <UpgradePopover
+              buttonText={featuredToggleButtonText(isFeatured)}
+              popoverText='You must upgrade your plan to feature more job listings.'
+            />
+          }
+        >
+          {button}
+        </AsyncIf>
+      )}
+    </AsyncIf>
+  )
+}
+
 function UpgradePopover({
   buttonText,
   popoverText
@@ -175,6 +232,24 @@ function statusToggleButtonText(status: JobListingStatus) {
     default:
       throw new Error(`Unknown status: ${status satisfies never}`)
   }
+}
+
+function featuredToggleButtonText(isFeatured: boolean) {
+  if (isFeatured) {
+    return (
+      <>
+        <StarOffIcon className='size-4' />
+        UnFeature
+      </>
+    )
+  }
+
+  return (
+    <>
+      <StarIcon className='size-4' />
+      Feature
+    </>
+  )
 }
 
 async function getJobListing(id: string, orgId: string) {

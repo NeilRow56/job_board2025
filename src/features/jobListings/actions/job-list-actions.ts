@@ -121,3 +121,30 @@ export async function toggleJobListingStatus(id: string) {
 
   return { error: false }
 }
+
+export async function toggleJobListingFeatured(id: string) {
+  const error = {
+    error: true,
+    message:
+      "You don't have permission to update this job listing's featured status"
+  }
+  const { orgId } = await getCurrentOrganization()
+  if (orgId == null) return error
+
+  const jobListing = await getJobListing(id, orgId)
+  if (jobListing == null) return error
+
+  const newFeaturedStatus = !jobListing.isFeatured
+  if (
+    !(await hasOrgUserPermission('org:job_listings:change_status')) ||
+    (newFeaturedStatus && (await hasReachedMaxFeaturedJobListings()))
+  ) {
+    return error
+  }
+
+  await updateJobListingDB(id, {
+    isFeatured: newFeaturedStatus
+  })
+
+  return { error: false }
+}
