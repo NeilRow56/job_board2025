@@ -25,14 +25,10 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
+import { ActionButton } from '@/components/ActionButton'
+import { toggleJobListingStatus } from '@/features/jobListings/actions/job-list-actions'
 
 // import { ActionButton } from '@/components/ActionButton'
-// import { getNextJobListingStatus } from '@/features/jobListings/lib/utils'
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger
-// } from '@/components/ui/popover'
 
 type Props = {
   params: Promise<{ jobListingId: string }>
@@ -93,12 +89,22 @@ async function SuspendedPage({ params }: Props) {
 }
 
 function StatusUpdateButton({
-  status
+  status,
+  id
 }: {
   status: JobListingStatus
   id: string
 }) {
-  const button = <Button variant='outline'>Toggle</Button>
+  const button = (
+    <ActionButton
+      action={toggleJobListingStatus.bind(null, id)}
+      variant='outline'
+      requireAreYouSure={getNextJobListingStatus(status) === 'published'}
+      areYouSureDescription='This will immediately show this job listing to all users.'
+    >
+      {statusToggleButtonText(status)}
+    </ActionButton>
+  )
 
   return (
     <AsyncIf
