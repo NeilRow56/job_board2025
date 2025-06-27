@@ -6,12 +6,20 @@ import {
   SidebarGroup,
   SidebarGroupAction,
   SidebarGroupContent,
-  SidebarGroupLabel
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { db } from '@/db'
-import { JobListingApplicationTable, JobListingTable } from '@/db/schema'
+import {
+  JobListingApplicationTable,
+  JobListingStatus,
+  JobListingTable
+} from '@/db/schema'
 import { getJobListingApplicationJobListingTag } from '@/features/jobListingApplications/db/cache/jobListingApplications'
 import { getJobListingOrganizationTag } from '@/features/jobListings/db/cache/jobListings'
+import { sortJobListingsByStatus } from '@/features/jobListings/lib/utils'
 
 import { SidebarOrganizationButton } from '@/features/organizations/components/SidebarOrganizationButton'
 import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth'
@@ -25,6 +33,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { ReactNode, Suspense } from 'react'
+import { JobListingMenuGroup } from './_JobListingMenugroup'
 
 export default function EmployerLayout({ children }: { children: ReactNode }) {
   return (
@@ -75,9 +84,41 @@ async function LayoutSuspense({ children }: { children: ReactNode }) {
 
 async function JobListingMenu({ orgId }: { orgId: string }) {
   const jobListings = await getJobListings(orgId)
-  console.log(jobListings)
-  return null
+
+  if (
+    jobListings.length === 0 &&
+    (await hasOrgUserPermission('org:job_listings:create'))
+  ) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Link href='/employer/job-listings/new'>
+              <PlusIcon />
+              <span>Create your first job listing</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    )
+  }
+
+  return Object.entries(Object.groupBy(jobListings, j => j.status))
+    .sort(([a], [b]) => {
+      return sortJobListingsByStatus(
+        a as JobListingStatus,
+        b as JobListingStatus
+      )
+    })
+    .map(([status, jobListings]) => (
+      <JobListingMenuGroup
+        key={status}
+        status={status as JobListingStatus}
+        jobListings={jobListings}
+      />
+    ))
 }
+
 //The LEFT JOIN keyword returns all records from the left table (table1), and the matching records from the right table (table2). The result is 0 records from the right side, if there is no match.
 //The RIGHT JOIN keyword returns all records from the right table (table2), and the matching records from the left table (table1). The result is 0 records from the left side, if there is no match.
 //The INNER JOIN keyword selects records that have matching values in both tables.

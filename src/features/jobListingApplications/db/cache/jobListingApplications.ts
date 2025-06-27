@@ -10,6 +10,7 @@ export function getJobListingApplicationJobListingTag(jobListingId: string) {
 }
 
 export function getJobListingApplicationIdTag({
+  // We need botn of the iss below because the schema primary key is made up of both ids
   jobListingId,
   userId
 }: {
