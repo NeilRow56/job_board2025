@@ -1,7 +1,13 @@
-export default function Home() {
+import { JobListingItems } from '@/app/(jobseeker)/_shared/JobListingItems'
+
+export default function HomePage({
+  searchParams
+}: {
+  searchParams: Promise<Record<string, string | string[]>>
+}) {
   return (
-    <div className='grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20'>
-      Home Page
+    <div className='m-4'>
+      <JobListingItems searchParams={searchParams} />
     </div>
   )
 }
