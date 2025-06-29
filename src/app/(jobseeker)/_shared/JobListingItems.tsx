@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -11,9 +12,10 @@ import { JobListingTable, OrganizationTable } from '@/db/schema'
 import { JobListingBadges } from '@/features/jobListings/components/JobListingBadges'
 import { convertSearchParamsToString } from '@/lib/convertSearchParamsToString'
 import { cn } from '@/lib/utils'
-
+import { differenceInDays } from 'date-fns'
 import { and, desc, eq, or, SQL } from 'drizzle-orm'
 import Link from 'next/link'
+import { connection } from 'next/server'
 
 import { Suspense } from 'react'
 
@@ -116,6 +118,7 @@ function JobListingListItem({
 }) {
   const nameInitials = organization?.name
     .split(' ')
+    //First 4 letters
     .splice(0, 4)
     .map(word => word[0])
     .join('')
@@ -154,7 +157,7 @@ function JobListingListItem({
           {jobListing.postedAt != null && (
             <div className='text-primary ml-auto text-sm font-medium @max-md:hidden'>
               <Suspense fallback={jobListing.postedAt.toLocaleDateString()}>
-                {/* <DaysSincePosting postedAt={jobListing.postedAt} /> */}
+                <DaysSincePosting postedAt={jobListing.postedAt} />
               </Suspense>
             </div>
           )}
@@ -168,4 +171,18 @@ function JobListingListItem({
       </CardContent>
     </Card>
   )
+}
+
+async function DaysSincePosting({ postedAt }: { postedAt: Date }) {
+  await connection()
+  const daysSincePosted = differenceInDays(postedAt, Date.now())
+
+  if (daysSincePosted === 0) {
+    return <Badge>New</Badge>
+  }
+
+  return new Intl.RelativeTimeFormat(undefined, {
+    style: 'narrow',
+    numeric: 'always'
+  }).format(daysSincePosted, 'days')
 }
