@@ -4,6 +4,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from '@/components/ui/resizable'
+import { SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Suspense } from 'react'
 import { JobListingItems } from '../../_shared/JobListingItems'
 
@@ -21,6 +22,8 @@ import Link from 'next/link'
 import { convertSearchParamsToString } from '@/lib/convertSearchParamsToString'
 import { XIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { IsBreakpoint } from '@/components/IsBreakpoint'
+import { ClientSheet } from './_ClientSheet'
 
 export default function JobListingPage({
   params,
@@ -37,15 +40,36 @@ export default function JobListingPage({
             <JobListingItems searchParams={searchParams} params={params} />
           </div>
         </ResizablePanel>
-
-        <ResizableHandle withHandle className='mx-2' />
-        <ResizablePanel id='right' order={2} defaultSize={40} minSize={30}>
-          <div className='h-screen overflow-y-auto p-4'>
-            <Suspense fallback={<LoadingSpinner />}>
-              <JobListingDetails params={params} searchParams={searchParams} />
-            </Suspense>
-          </div>
-        </ResizablePanel>
+        <IsBreakpoint
+          breakpoint='min-width: 1024px'
+          otherwise={
+            <ClientSheet>
+              <SheetContent hideCloseButton className='overflow-y-auto p-4'>
+                <SheetHeader className='sr-only'>
+                  <SheetTitle>Job Listing Details</SheetTitle>
+                </SheetHeader>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <JobListingDetails
+                    searchParams={searchParams}
+                    params={params}
+                  />
+                </Suspense>
+              </SheetContent>
+            </ClientSheet>
+          }
+        >
+          <ResizableHandle withHandle className='mx-2' />
+          <ResizablePanel id='right' order={2} defaultSize={40} minSize={30}>
+            <div className='h-screen overflow-y-auto p-4'>
+              <Suspense fallback={<LoadingSpinner />}>
+                <JobListingDetails
+                  params={params}
+                  searchParams={searchParams}
+                />
+              </Suspense>
+            </div>
+          </ResizablePanel>
+        </IsBreakpoint>
       </ResizablePanelGroup>
     </>
   )

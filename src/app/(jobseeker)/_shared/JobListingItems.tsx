@@ -17,6 +17,7 @@ import {
 } from '@/db/schema'
 import { JobListingBadges } from '@/features/jobListings/components/JobListingBadges'
 import { getJobListingGlobalTag } from '@/features/jobListings/db/cache/jobListings'
+import { getOrganizationIdTag } from '@/features/organizations/db/cache/organizations'
 import { convertSearchParamsToString } from '@/lib/convertSearchParamsToString'
 import { cn } from '@/lib/utils'
 import { differenceInDays } from 'date-fns'
@@ -223,7 +224,7 @@ async function getJobListings(
     )
   }
 
-  return db.query.JobListingTable.findMany({
+  const data = await db.query.JobListingTable.findMany({
     //If we have an JobListinId - Is this "published" - an equals the job Listing table id
     where: or(
       jobListingId
@@ -246,4 +247,10 @@ async function getJobListings(
     },
     orderBy: [desc(JobListingTable.isFeatured), desc(JobListingTable.postedAt)]
   })
+
+  data.forEach(listing => {
+    cacheTag(getOrganizationIdTag(listing.organization.id))
+  })
+
+  return data
 }
