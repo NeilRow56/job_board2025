@@ -47,6 +47,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
+import { NewJobListingApplicationForm } from '@/features/jobListingApplications/components/NewJobListingApplicationForm'
 
 export default function JobListingPage({
   params,
@@ -241,8 +242,7 @@ async function ApplyButton({ jobListingId }: { jobListingId: string }) {
           </DialogDescription>
         </DialogHeader>
         <div className='flex-1 overflow-y-auto'>
-          {/* <NewJobListingApplicationForm jobListingId={jobListingId} /> */}
-          New Job Listing Application Form
+          <NewJobListingApplicationForm jobListingId={jobListingId} />
         </div>
       </DialogContent>
     </Dialog>
