@@ -211,22 +211,22 @@ async function ApplyButton({ jobListingId }: { jobListingId: string }) {
   }
 
   // To apply for a job the user must have a resume
-  const userResume = await getUserResume(userId)
-  if (userResume == null) {
-    return (
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button>Apply</Button>
-        </PopoverTrigger>
-        <PopoverContent className='flex flex-col gap-2'>
-          You need to upload your resume before applying for a job.
-          <Button asChild>
-            <Link href='/user-settings/resume'>Upload Resume</Link>
-          </Button>
-        </PopoverContent>
-      </Popover>
-    )
-  }
+  // const userResume = await getUserResume(userId)
+  // if (userResume == null) {
+  //   return (
+  //     <Popover>
+  //       <PopoverTrigger asChild>
+  //         <Button>Apply</Button>
+  //       </PopoverTrigger>
+  //       <PopoverContent className='flex flex-col gap-2'>
+  //         You need to upload your resume before applying for a job.
+  //         <Button asChild>
+  //           <Link href='/user-settings/resume'>Upload Resume</Link>
+  //         </Button>
+  //       </PopoverContent>
+  //     </Popover>
+  //   )
+  // }
 
   return (
     <Dialog>
