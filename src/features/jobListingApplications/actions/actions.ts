@@ -27,7 +27,7 @@ export async function createJobListingApplication(
     getUserResume(userId),
     getPublicJobListing(jobListingId)
   ])
-  if (jobListing == null) return permissionError
+  if (userResume == null || jobListing == null) return permissionError
 
   const { success, data } = newJobListingApplicationSchema.safeParse(unsafeData)
 
@@ -46,10 +46,10 @@ export async function createJobListingApplication(
 
   // TODO: AI generation
 
-  //   await inngest.send({
-  //     name: 'app/jobListingApplication.created',
-  //     data: { jobListingId, userId }
-  //   })
+  await inngest.send({
+    name: 'app/jobListingApplication.created',
+    data: { jobListingId, userId }
+  })
 
   return {
     error: false,

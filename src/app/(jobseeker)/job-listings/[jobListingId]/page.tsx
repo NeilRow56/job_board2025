@@ -138,14 +138,16 @@ async function JobListingDetails({
             </div>
             {jobListing.postedAt != null && (
               <div className='text-muted-foreground text-sm @min-lg:hidden'>
-                {jobListing.postedAt.toLocaleDateString()}
+                {jobListing.postedAt.toLocaleDateString('en-GB', {
+                  timeZone: 'UTC'
+                })}
               </div>
             )}
           </div>
           <div className='ml-auto flex items-center gap-4'>
             {jobListing.postedAt != null && (
               <div className='text-muted-foreground text-sm @max-lg:hidden'>
-                {jobListing.postedAt.toLocaleDateString()}
+                {jobListing.postedAt.toLocaleString()}
               </div>
             )}
             <Button size='icon' variant='outline' asChild>
@@ -211,22 +213,22 @@ async function ApplyButton({ jobListingId }: { jobListingId: string }) {
   }
 
   // To apply for a job the user must have a resume
-  // const userResume = await getUserResume(userId)
-  // if (userResume == null) {
-  //   return (
-  //     <Popover>
-  //       <PopoverTrigger asChild>
-  //         <Button>Apply</Button>
-  //       </PopoverTrigger>
-  //       <PopoverContent className='flex flex-col gap-2'>
-  //         You need to upload your resume before applying for a job.
-  //         <Button asChild>
-  //           <Link href='/user-settings/resume'>Upload Resume</Link>
-  //         </Button>
-  //       </PopoverContent>
-  //     </Popover>
-  //   )
-  // }
+  const userResume = await getUserResume(userId)
+  if (userResume == null) {
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button>Apply</Button>
+        </PopoverTrigger>
+        <PopoverContent className='flex flex-col gap-2'>
+          You need to upload your resume before applying for a job.
+          <Button asChild>
+            <Link href='/user-settings/resume'>Upload Resume</Link>
+          </Button>
+        </PopoverContent>
+      </Popover>
+    )
+  }
 
   return (
     <Dialog>
