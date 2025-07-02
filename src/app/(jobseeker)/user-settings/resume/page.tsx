@@ -7,7 +7,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Suspense } from 'react'
-
+import { DropzoneClient } from './_DropzoneClient'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -16,9 +16,9 @@ import Link from 'next/link'
 import { eq } from 'drizzle-orm'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRender'
-import { getUserResumeIdTag } from '@/features/users/db/cache/userResume'
 import { UserResumeTable } from '@/db/schema'
 import { db } from '@/db'
+import { getUserResumeIdTag } from '@/features/users/db/cache/userResume'
 
 export default function UserResumePage() {
   return (
@@ -26,8 +26,7 @@ export default function UserResumePage() {
       <h1 className='text-2xl font-bold'>Upload Your Resume</h1>
       <Card>
         <CardContent>
-          {/* <DropzoneClient /> */}
-          Dropzone
+          <DropzoneClient />
         </CardContent>
         <Suspense>
           <ResumeDetails />

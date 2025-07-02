@@ -5,6 +5,7 @@ import './globals.css'
 
 import { ClerkProvider } from '@/services/clerk/components/ClerkProvider'
 import { Toaster } from '@/components/ui/sonner'
+import { UploadThingSSR } from '@/services/uploadthing/components/UploadThingSSR'
 
 const openSans = localFont({
   src: '/fonts/OpenSans-VariableFont_wdth,wght.ttf',
@@ -47,6 +48,7 @@ export default function RootLayout({
               }
             }}
           />
+          <UploadThingSSR />
         </body>
       </html>
     </ClerkProvider>
